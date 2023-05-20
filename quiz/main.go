@@ -10,9 +10,9 @@ import (
 )
 
 func main() {
-	csvFilename := flag.String("csv", "problems.csv", "a csv file in the format of 'question,answer'")
-	timeLimit := flag.Int("limit", 30, "the time limit for the quiz in seconds")
-	flag.Parse()
+	// get parameters from command line with flag
+	csvFilename, timeLimit := getCommandLineParameters()
+
 	file, err := os.Open(*csvFilename)
 	if err != nil {
 		exit(fmt.Sprintf("Failed to open the CSV file: %s\n", *csvFilename))
@@ -45,6 +45,14 @@ func main() {
 		}
 	}
 	fmt.Printf("You scored %d out of %d.\n", correct, len(problems))
+}
+
+func getCommandLineParameters() (*string, *int) {
+	// get parameters from command line with flag
+	csvFilename := flag.String("csv", "problems.csv", "a csv file in the format of 'question,answer'")
+	timeLimit := flag.Int("limit", 30, "the time limit for the quiz in seconds")
+	flag.Parse()
+	return csvFilename, timeLimit
 }
 
 func parseLines(lines [][]string) []problem {
