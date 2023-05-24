@@ -2,8 +2,16 @@ package cyoa
 
 import (
 	"encoding/json"
+	"html/template"
 	"io"
+	"net/http"
 )
+
+func init() {
+	tpl = template.Must(template.New("").Parse(defaultHandlerTmpl))
+}
+
+var tpl *template.Template
 
 var defaultHandlerTmpl = `
 <!DOCTYPE html>
@@ -70,6 +78,31 @@ var defaultHandlerTmpl = `
     </style>
   </body>
 </html>`
+
+// HandlerOptions are used with the NewHandler function to
+// configure the http.Handler returned.
+type HandlerOption func(h *handler)
+
+// NewHandler will construct an http.Handler that will render
+// the story provided.
+// The default handler will use the full path (minus the / prefix)
+// as the chapter name, defaulting to "intro" if the path is
+// empty. The default template creates option links that follow
+// this pattern.
+func NewHandler(s Story) http.Handler {
+	return handler{s}
+}
+
+type handler struct {
+	s Story
+}
+
+func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	err := tpl.Execute(w, h.s["intro"])
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
 
 // JsonStory will decode a story using the incoming reader
 // and the encoding/json package. It is assumed that the
