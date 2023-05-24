@@ -1,5 +1,22 @@
 package cyoa
 
+import (
+	"encoding/json"
+	"io"
+)
+
+// JsonStory will decode a story using the incoming reader
+// and the encoding/json package. It is assumed that the
+// provided reader has the story stored in JSON.
+func JsonStory(r io.Reader) (Story, error) {
+	d := json.NewDecoder(r)
+	var story Story
+	if err := d.Decode(&story); err != nil {
+		return nil, err
+	}
+	return story, nil
+}
+
 // Story represents a Choose Your Own Adventure story.
 // Each key is the name of a story chapter (aka "arc"), and
 // each value is a Chapter.
