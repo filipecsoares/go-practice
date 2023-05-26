@@ -91,12 +91,16 @@ type HandlerOption func(h *handler)
 // as the chapter name, defaulting to "intro" if the path is
 // empty. The default template creates option links that follow
 // this pattern.
-func NewHandler(s Story) http.Handler {
-	return handler{s}
+func NewHandler(s Story, t *template.Template) http.Handler {
+	if t == nil {
+		t = tpl
+	}
+	return handler{s, t}
 }
 
 type handler struct {
 	s Story
+	t *template.Template
 }
 
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
