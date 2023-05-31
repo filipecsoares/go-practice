@@ -10,3 +10,10 @@ func Factorial(num int) int {
 	}
 	return result
 }
+
+func FactorialRecursive(num int) int {
+	if num == 0 || num == 1 {
+		return num
+	}
+	return FactorialRecursive(num-1) * num
+}
